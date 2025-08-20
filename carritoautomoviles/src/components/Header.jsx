@@ -1,6 +1,9 @@
 
 
-const Header = ({cart}) => {
+const Header = ({ cart, removeFromCart, decreaseQuantity, increaseQuantity }) => {
+
+  const cartTotal = cart.reduce( (total, {quantity,price}) => {return total + (quantity * price)}, 0 )
+
   return (
     <header className="py-3 header">
       <div className="container-xl">
@@ -14,7 +17,14 @@ const Header = ({cart}) => {
             <div className="carrito-container">
               <div className="carrito">
                 <img className="img-fluid" src="./public/img/carrito.png" alt="imagen carrito" />
-                <div id="carrito-content" className="carrito-content"><p className="text-center">El carrito está vacío</p>                  
+                <div id="carrito-content" className="carrito-content">
+                  
+                  {cart.length === 0?
+                  (<p className="text-center">El carrito está vacío</p>)       
+                  :
+                  (
+                  <>
+
                   <table className="w-100 table">
                     <thead>
                       <tr>
@@ -40,6 +50,7 @@ const Header = ({cart}) => {
                             <button 
                               type="button" 
                               className="btn btn-dark"
+                              onClick={() => decreaseQuantity(id)}
                               >
                                 -
                               </button>
@@ -49,6 +60,7 @@ const Header = ({cart}) => {
                             <button 
                               type="button" 
                               className="btn btn-dark"
+                              onClick={() => increaseQuantity(id)}
                               >
                                 +
                               </button>
@@ -59,6 +71,7 @@ const Header = ({cart}) => {
                             type="button" 
                             className="btn-close" 
                             aria-label="Close"
+                            onClick={() => removeFromCart(id) }
                             ></button>
                         </td>
                       </tr>
@@ -66,10 +79,12 @@ const Header = ({cart}) => {
                     </tbody>
 
                   </table>
-                  <p className="text-end">Total a pagar: <span className="fw-bold">$ 1.000.000</span></p>
+                  <p className="text-end">Total a pagar: <span className="fw-bold">$ {cartTotal.toLocaleString() }</span></p>
+                  
+                  
                   <button 
                     className="btn btn-dark w-100 mt-3 p-2"
-                    >Vaciar Carrito</button>
+                    >Vaciar Carrito</button> </>)}
                 </div>
               </div>
             </div>
