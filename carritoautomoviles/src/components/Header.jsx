@@ -1,8 +1,6 @@
+import PropTypes from 'prop-types'
 
-
-const Header = ({ cart, removeFromCart, decreaseQuantity, increaseQuantity }) => {
-
-  const cartTotal = cart.reduce( (total, {quantity,price}) => {return total + (quantity * price)}, 0 )
+const Header = ({ cart, removeFromCart, decreaseQuantity, increaseQuantity, clearCart, cartTotal }) => {
 
   return (
     <header className="py-3 header">
@@ -10,19 +8,19 @@ const Header = ({ cart, removeFromCart, decreaseQuantity, increaseQuantity }) =>
         <div className="row justify-content-center justify-content-md-between">
           <div className="col-8 col-md-3">
             <a href="index.html">
-              <img className="img-fluid" src="./public/img/Mustang-LOGO.svg" alt="imagen logo" />
+              <img className="img-fluid" src="./img/Mustang-LOGO.svg" alt="imagen logo" />
             </a>
           </div>
           <nav className="col-md-6 a mt-5 d-flex align-items-start justify-content-end">
             <div className="carrito-container">
               <div className="carrito">
-                <img className="img-fluid" src="./public/img/carrito.png" alt="imagen carrito" />
+                <img className="img-fluid" src="./img/carrito.png" alt="imagen carrito" />
                 <div id="carrito-content" className="carrito-content">
                   
                   {cart.length === 0?
                   (<p className="text-center">El carrito está vacío</p>)       
                   :
-                  (
+                  ( /* si el carrito tiene elementos se muestra la tabla con los elementos del carrito. react no funciona con las etiquetas suelta por ende se le agrego el fragment*/ 
                   <>
 
                   <table className="w-100 table">
@@ -35,10 +33,10 @@ const Header = ({ cart, removeFromCart, decreaseQuantity, increaseQuantity }) =>
                       </tr>
                     </thead>
                     <tbody>    
-                      {cart.map(({id, image, name, price, quantity })=> (
+                      {cart.map(({id, image, name, price, quantity })=> ( /** mapeado de carrito para poder trabajar con el  header */
 
                       <tr
-                      key={id}
+                      key={id} /** se agrega el id para poder identificar cada objeto del carrito y poder trabajar con ellos */
                       >
                         <td className="align-middle">
                           <img className="img-fluid" src={`img/${image}.jpg`} alt="imagen automóvil" />
@@ -80,10 +78,9 @@ const Header = ({ cart, removeFromCart, decreaseQuantity, increaseQuantity }) =>
 
                   </table>
                   <p className="text-end">Total a pagar: <span className="fw-bold">$ {cartTotal.toLocaleString() }</span></p>
-                  
-                  
                   <button 
                     className="btn btn-dark w-100 mt-3 p-2"
+                    onClick={clearCart}
                     >Vaciar Carrito</button> </>)}
                 </div>
               </div>
@@ -95,5 +92,15 @@ const Header = ({ cart, removeFromCart, decreaseQuantity, increaseQuantity }) =>
     
   )
 }
+
+Header.propTypes = {
+  cart: PropTypes.array.isRequired,
+  removeFromCart: PropTypes.func.isRequired,
+  decreaseQuantity: PropTypes.func.isRequired,
+  increaseQuantity: PropTypes.func.isRequired,
+  clearCart: PropTypes.func.isRequired,
+  cartTotal: PropTypes.number.isRequired
+}
+
 
 export default Header
