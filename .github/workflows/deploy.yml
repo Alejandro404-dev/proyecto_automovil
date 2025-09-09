@@ -10,32 +10,50 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: carritoautomoviles   # 👈 Aquí definimos el directorio base
-
     steps:
       # Paso 1 - Checkout del repositorio
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      # Paso 2 - Configurar Node.js
+      # Paso 2 - Configurar Node.js (ahora con Node 20)
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3  
         with:
-          node-version: 18
+          node-version: 20
 
       # Paso 3 - Instalar dependencias
       - name: Install dependencies
-        run: npm install
+        uses: bahmutov/npm-install@v1
 
       # Paso 4 - Construir el proyecto
       - name: Build project
         run: npm run build
+        working-directory: ./carritoautomoviles
 
-      # Paso 5 - Deploy a GitHub Pages
-      - name: Deploy
+      # Paso 5 - Subir archivos listos para producción con v4
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v4  
+        with:
+          name: production-files
+          path: ./carritoautomoviles/dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+
+    steps:
+      # Paso 6 - Descargar los archivos de producción con v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4  
+        with:
+          name: production-files
+          path: ./dist
+
+      # Paso 7 - Desplegar a GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: carritoautomoviles/dist   # 👈 carpeta donde Vite genera el build
+          publish_dir: ./dist
